@@ -1,0 +1,26 @@
+#!/bin/sh
+
+indent() {
+  sed -u 's/^/       /'
+}
+
+echo "-----> Install sox with mp2/mp3 handlers"
+BUILD_DIR=$1
+VENDOR_DIR="vendor"
+SOX_DIR="sox"
+DOWNLOAD_URL="https://github.com/ManicCharm/heroku-buildpack-sox-with-mp3/raw/master/sox.tar"
+
+echo "DOWNLOAD_URL = " $DOWNLOAD_URL | indent
+
+cd $BUILD_DIR
+mkdir -p $VENDOR_DIR
+cd $VENDOR_DIR
+mkdir -p $SOX_DIR
+cd $SOX_DIR
+curl -L --silent $DOWNLOAD_URL | tar x
+
+echo "exporting PATH and LIBRARY_PATH" | indent
+PROFILE_PATH="$BUILD_DIR/.profile.d/sox.sh"
+mkdir -p $(dirname $PROFILE_PATH)
+echo 'export PATH="$PATH:$HOME/vendor/sox/bin"' >> $PROFILE_PATH
+echo 'export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:vendor/sox/lib"' >> $PROFILE_PATH
